@@ -5,7 +5,7 @@ import cors from "cors";
 
 // package.json 에서 "type" : "module" 선언을 통해 활용 가능
 
-import postRoutes from "./routes/posts.js";
+import postRoutes from "./routes/posts";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 app.use("/posts", postRoutes);
 
-app.use(bodyParser.json({ limit: "30mb", extended: true }));
+app.use(bodyParser.json({ limit: "30mb" }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
 
@@ -25,7 +25,7 @@ mongoose
   .connect(CONNECTION_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-  })
+  } as mongoose.ConnectOptions)
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server running on port : ${PORT}`);
@@ -35,4 +35,4 @@ mongoose
     console.log(err.message);
   });
 
-// mongoose.set("useFindandModify", false);
+// mongoose.set("useFindAndModify" as mongoose.MongooseOptions, false);
