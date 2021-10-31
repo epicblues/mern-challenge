@@ -1,6 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
-
+import { Provider } from 'react-redux'; // Redux의 Store를 지속적으로 추적(React가
+import { createStore, applyMiddleware, compose } from 'redux';
+import thunk from 'redux-thunk';
 import App from "./App";
+import reducers from "./reducers"
 
-ReactDOM.render(<App />, document.getElementById("root"));
+const store = createStore(reducers, compose(applyMiddleware(thunk)))
+// Redux의 고유 객체 - 아직 React랑 연결된 것이 아니다.
+
+ReactDOM.render(
+  <Provider store={store}><App /></Provider>, document.getElementById("root"));
