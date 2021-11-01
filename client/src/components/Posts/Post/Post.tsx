@@ -11,7 +11,7 @@ import { deletePost } from '../../../actions/posts'
 
 
 
-const Post: FunctionComponent<{ post: PostVo }> = ({ post }) => {
+const Post: FunctionComponent<{ post: PostVo, setCurrentId: Function }> = ({ post, setCurrentId }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -23,7 +23,10 @@ const Post: FunctionComponent<{ post: PostVo }> = ({ post }) => {
         <Typography variant='body2'>{moment(post.createdAt).fromNow()}</Typography>
       </div>
       <div className={classes.overlay2}>
-        <Button style={{ color: 'white' }} size="small" onClick={() => { }}>
+        <Button
+          style={{ color: 'white' }}
+          size="small"
+          onClick={() => { setCurrentId(post._id) }}>
           <MoreHorizIcon fontSize="medium" />
         </Button>
       </div>

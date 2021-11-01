@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { NativeError } from "mongoose";
+import mongoose, { NativeError } from "mongoose";
 import PostMessage from "../models/postMessage";
 
 export const getPosts: RequestHandler = async (req, res) => {
@@ -28,6 +28,19 @@ export const createPost: RequestHandler = async (req, res) => {
   }
 };
 
+export const updatePost: RequestHandler = async (req, res) => {
+  const { id: _id } = req.params;
+  const post = req.body;
+  // destructuring시 프로퍼티 변수명 사용하고 싶지 않을 경우 (id => _id)
+  if (!mongoose.Types.ObjectId.isValid(_id))
+    return res.status(404).send("No post with that id");
+  const updatedPost = await PostMessage.findByIdAndUpdate(_id, post, {
+    new: true,
+  });
+  return res.status(200).send(updatedPost);
+  // new 옵션 => update된 Document를 받아온다.
+};
+
 export const deletePost: RequestHandler = async (req, res) => {
   const _id = req.body._id;
   PostMessage.findOneAndDelete({ _id }, (error: NativeError, deletedPost) => {
@@ -35,6 +48,6 @@ export const deletePost: RequestHandler = async (req, res) => {
       res.status(409).json({ message: error.message });
       return;
     }
-    res.status(200).json(deletedPost);
+    return res.status(200).json(deletedPost);
   });
 };

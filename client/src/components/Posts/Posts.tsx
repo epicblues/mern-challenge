@@ -5,10 +5,10 @@ import useStyles from './style'
 import { Grid, CircularProgress } from '@material-ui/core';
 import { PostVo } from '../../model';
 
-const Posts: FunctionComponent = () => {
+const Posts: FunctionComponent<{ setCurrentId: Function }> = ({ setCurrentId }) => {
   const classes = useStyles();
   const posts = useSelector((state: RootStateOrAny) => state.posts)
-
+  // 실제로 redux의 state 중에서 posts를 추적하는 변수
   console.log(posts);
 
   return (
@@ -16,7 +16,7 @@ const Posts: FunctionComponent = () => {
       <Grid className={classes.mainContainer} container alignItems="stretch" spacing={3}>
         {posts.map((post: PostVo) => (
           <Grid key={post._id} item xs={12} sm={6}>
-            <Post post={post} />
+            <Post post={post} setCurrentId={setCurrentId} />
           </Grid>
 
         )

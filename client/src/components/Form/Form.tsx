@@ -2,9 +2,11 @@ import React, { ChangeEventHandler, FormEventHandler, FunctionComponent, MouseEv
 import useStyles from './style'
 import { TextField, Button, Typography, Paper } from '@material-ui/core';
 import FileBase from 'react-file-base64';
-import { useDispatch } from 'react-redux';
+import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
 import { createPost } from '../../actions/posts';
 
+
+// Get the current ID of form
 
 export type PostType = {
   title?: String,
@@ -16,8 +18,9 @@ export type PostType = {
   createdAt?: Date
 }
 
-const Form: FunctionComponent = () => {
+const Form: FunctionComponent<{ currentId: string | null }> = ({ currentId }) => {
   const dispatch = useDispatch();
+  const posts = useSelector((state: RootStateOrAny) => state.posts)
   const [postData, setPostData] = useState<PostType>({
     creator: '',
     title: '',
@@ -44,7 +47,7 @@ const Form: FunctionComponent = () => {
   return (
     <Paper className={classes.paper}>
       <form action="" autoComplete="off" noValidate className={`${classes.form} ${classes.root}`} onSubmit={handleSubmit}>
-        <Typography variant="h6">Creating a Memory</Typography>
+        <Typography variant="h6">{currentId ? 'Updating' : 'Creating'} a Memory</Typography>
         <TextField
           name="creator"
           variant="outlined"
