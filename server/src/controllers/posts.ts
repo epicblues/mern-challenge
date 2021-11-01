@@ -42,12 +42,26 @@ export const updatePost: RequestHandler = async (req, res) => {
 };
 
 export const deletePost: RequestHandler = async (req, res) => {
-  const _id = req.body._id;
-  PostMessage.findOneAndDelete({ _id }, (error: NativeError, deletedPost) => {
-    if (error) {
-      res.status(409).json({ message: error.message });
-      return;
+  const { _id: id } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return res.status(404).send("No post with that id");
+
+  await PostMessage.findByIdAndRemove(id);
+
+  res.json({ message: "Post deleted successfully" });
+};
+
+export const likePost: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return res.status(404).send("No post with that id");
+  const updatedPost = await PostMessage.findByIdAndUpdate(
+    id,
+    { $inc: { likeCount: 1 } },
+    {
+      new: true,
     }
-    return res.status(200).json(deletedPost);
-  });
+  );
+  return res.status(200).send(updatedPost);
 };

@@ -18,11 +18,10 @@ app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
 app.use("/posts", postRoutes);
 
-const CONNECTION_URL = process.env.CONNECTION_URL;
 const PORT = process.env.PORT || 5000;
 
 mongoose
-  .connect(CONNECTION_URL, {
+  .connect(process.env.CONNECTION_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   } as mongoose.ConnectOptions)

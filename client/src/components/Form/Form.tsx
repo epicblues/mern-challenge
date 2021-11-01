@@ -1,26 +1,28 @@
-import React, { ChangeEventHandler, FormEventHandler, FunctionComponent, MouseEventHandler, useState } from 'react'
+import React, { ChangeEventHandler, FormEventHandler, FunctionComponent, MouseEventHandler, useEffect, useState } from 'react'
 import useStyles from './style'
 import { TextField, Button, Typography, Paper } from '@material-ui/core';
 import FileBase from 'react-file-base64';
 import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
-import { createPost } from '../../actions/posts';
+import { createPost, updatePost } from '../../actions/posts';
 
 
 // Get the current ID of form
 
 export type PostType = {
-  title?: String,
-  message?: String,
-  creator?: String,
+  _id?: string
+  title?: string,
+  message?: string,
+  creator?: string,
   tags?: string[],
-  selectedFile?: String,
-  likeCount?: Number,
+  selectedFile?: string,
+  likeCount?: number,
   createdAt?: Date
 }
 
-const Form: FunctionComponent<{ currentId: string | null }> = ({ currentId }) => {
+const Form: FunctionComponent<{ currentId: string | null, setCurrentId: Function }> = ({ currentId, setCurrentId }) => {
   const dispatch = useDispatch();
-  const posts = useSelector((state: RootStateOrAny) => state.posts)
+  const selectedPost = useSelector((state: RootStateOrAny) => currentId ? state.posts.find((post: PostType) => post._id === currentId) : null)
+  // redux의 data을 fetch한다.
   const [postData, setPostData] = useState<PostType>({
     creator: '',
     title: '',
@@ -28,13 +30,28 @@ const Form: FunctionComponent<{ currentId: string | null }> = ({ currentId }) =>
     selectedFile: '',
     message: ''
   });
+
+  useEffect(() => {
+    if (selectedPost) {
+      setPostData(selectedPost)
+    }
+    return () => {
+
+    }
+  }, [selectedPost])
+
   const classes = useStyles();
   const handleSubmit: FormEventHandler = (event) => {
     event.preventDefault();
-    dispatch(createPost(postData));
+    if (currentId) {
+      dispatch(updatePost(currentId, postData))
+    } else {
+      dispatch(createPost(postData));
+    }
+    clear()
 
   }
-  const clear: MouseEventHandler = () => {
+  const clear = () => {
     setPostData({
       creator: '',
       title: '',
@@ -42,6 +59,7 @@ const Form: FunctionComponent<{ currentId: string | null }> = ({ currentId }) =>
       selectedFile: '',
       message: ''
     })
+    setCurrentId(null);
   }
 
   return (
@@ -85,12 +103,12 @@ const Form: FunctionComponent<{ currentId: string | null }> = ({ currentId }) =>
           fullWidth
           value={postData.tags}
           onChange={(e) => {
-            setPostData({ ...postData, tags: e.target.value.split(',') })
+            setPostData({ ...postData, tags: e.target.value.split(', ') })
           }}
         />
         <div className={classes.fileInput}>
           <FileBase type="file" multiple={false}
-            onDone={({ base64 }: { base64: String }) => setPostData({ ...postData, selectedFile: base64 })} />
+            onDone={({ base64 }: { base64: string }) => setPostData({ ...postData, selectedFile: base64 })} />
         </div>
         <Button className={classes.buttonSubmit} variant="contained" color="primary" size="large" type="submit" fullWidth>Submit</Button>
         <Button variant="contained" color="secondary" size="small" onClick={clear} fullWidth>Clear</Button>
