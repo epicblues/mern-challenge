@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import { NativeError } from "mongoose";
 import PostMessage from "../models/postMessage";
 
 export const getPosts: RequestHandler = async (req, res) => {
@@ -25,4 +26,15 @@ export const createPost: RequestHandler = async (req, res) => {
   } catch (error) {
     res.status(409).json({ message: error.message });
   }
+};
+
+export const deletePost: RequestHandler = async (req, res) => {
+  const _id = req.body._id;
+  PostMessage.findOneAndDelete({ _id }, (error: NativeError, deletedPost) => {
+    if (error) {
+      res.status(409).json({ message: error.message });
+      return;
+    }
+    res.status(200).json(deletedPost);
+  });
 };

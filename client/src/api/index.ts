@@ -8,4 +8,6 @@ export const fetchPosts = () => axios.get(url);
 
 export const createPost = (newPost: PostType) => axios.post(url, newPost);
 
+export const deletePost = (_id: string) => axios.delete(url, { data: { _id } });
+
 // 모든 backend action은 Redux에서 이루어진다.

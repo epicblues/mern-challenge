@@ -1,4 +1,5 @@
 import { Reducer } from "redux";
+import { PostVo } from "../model";
 
 const postReducer: Reducer = (posts = [], action) => {
   // state = [] 는 초기값 설정
@@ -10,6 +11,8 @@ const postReducer: Reducer = (posts = [], action) => {
     // action의 payload에 세팅된 fetch된 값을 state로 반영한다.
     case "CREATE":
       return [...posts, action.payload];
+    case "DELETE":
+      return posts.filter((post: PostVo) => post._id !== action.payload._id);
     default:
       return posts;
   }
