@@ -5,6 +5,7 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 import App from "./App";
 import reducers from "./reducers"
+import './index.css';
 
 const store = createStore(reducers, compose(applyMiddleware(thunk)))
 // Redux의 고유 객체 - 아직 React랑 연결된 것이 아니다.

@@ -10,7 +10,7 @@ export type PostType = {
   title?: String,
   message?: String,
   creator?: String,
-  tags?: String,
+  tags?: string[],
   selectedFile?: String,
   likeCount?: Number,
   createdAt?: Date
@@ -21,7 +21,7 @@ const Form: FunctionComponent = () => {
   const [postData, setPostData] = useState<PostType>({
     creator: '',
     title: '',
-    tags: '',
+    tags: [],
     selectedFile: '',
     message: ''
   });
@@ -35,7 +35,7 @@ const Form: FunctionComponent = () => {
     setPostData({
       creator: '',
       title: '',
-      tags: '',
+      tags: [],
       selectedFile: '',
       message: ''
     })
@@ -82,7 +82,7 @@ const Form: FunctionComponent = () => {
           fullWidth
           value={postData.tags}
           onChange={(e) => {
-            setPostData({ ...postData, tags: e.target.value })
+            setPostData({ ...postData, tags: e.target.value.split(',') })
           }}
         />
         <div className={classes.fileInput}>
