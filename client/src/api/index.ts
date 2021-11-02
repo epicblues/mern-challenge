@@ -1,7 +1,9 @@
 import axios from "axios";
 import { PostType } from "../components/Form/Form";
 
-const url = "http://localhost:5000/posts";
+const url =
+  process.env.REACT_APP_LOCAL_URL ||
+  "https://kms-mern-practice.herokuapp.com/posts";
 // url pointing to backend route
 
 export const fetchPosts = () => axios.get(url);
@@ -11,7 +13,7 @@ export const createPost = (newPost: PostType) => axios.post(url, newPost);
 export const updatePost = (id: string, post: PostType) =>
   axios.patch(url + `/${id}`, post);
 
-export const deletePost = (_id: string) => axios.delete(url, { data: { _id } });
+export const deletePost = (id: string) => axios.delete(url, { data: { id } });
 
 export const likePost = (id: string) => axios.patch(`${url}/${id}/likePost`);
 
