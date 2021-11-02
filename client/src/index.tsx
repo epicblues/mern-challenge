@@ -10,6 +10,7 @@ import { ThemeProvider } from '@material-ui/styles';
 import { createTheme } from '@material-ui/core';
 
 
+
 const store = createStore(reducers, compose(applyMiddleware(thunk)))
 // Redux의 고유 객체 - 아직 React랑 연결된 것이 아니다.
 
