@@ -9,3 +9,11 @@ export type PostVo = {
   __v?: number;
   createdAt?: Date;
 };
+
+export type UserVo = {
+  email: string;
+  password: string;
+  confirmPassword?: string;
+  firstName?: string;
+  lastName?: string;
+};

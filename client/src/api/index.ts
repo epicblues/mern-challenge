@@ -1,5 +1,6 @@
 import axios from "axios";
 import { PostType } from "../components/Form/Form";
+import { UserVo } from "../model";
 
 const url =
   process.env.REACT_APP_LOCAL_URL ||
@@ -16,5 +17,7 @@ export const updatePost = (id: string, post: PostType) =>
 export const deletePost = (id: string) => axios.delete(url, { data: { id } });
 
 export const likePost = (id: string) => axios.patch(`${url}/${id}/likePost`);
+
+// export const signUp = (user : UserVo) => axios.post()
 
 // 모든 backend action은 Redux에서 이루어진다.
