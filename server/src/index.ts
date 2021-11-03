@@ -5,6 +5,7 @@ import cors from "cors";
 // package.json 에서 "type" : "module" 선언을 통해 활용 가능
 
 import postRoutes from "./routes/posts";
+import userRoutes from "./routes/users";
 import dotenv from "dotenv";
 dotenv.config();
 // .env 파일을 Node의 환경변수로 인식하게 해주는 라이브러리
@@ -17,6 +18,7 @@ app.use(bodyParser.json({ limit: "30mb" }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
 app.use("/posts", postRoutes);
+app.use("/user", userRoutes);
 app.get("/", (req, res) => {
   res.send("Hello to memories API");
 });

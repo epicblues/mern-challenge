@@ -10,7 +10,9 @@ export const signin =
   async (dispatch: Dispatch) => {
     try {
       // login the user
+      const { data } = await api.signIn(formData);
 
+      dispatch({ type: AUTH, data });
       history.push("/");
     } catch (error) {
       console.log(error);
@@ -21,8 +23,8 @@ export const signup =
   (formData: UserVo, history: History<unknown>) =>
   async (dispatch: Dispatch) => {
     try {
-      // sign up the user
-
+      const { data } = await api.signUp(formData);
+      dispatch({ type: AUTH, data });
       history.push("/");
     } catch (error) {
       console.log(error);

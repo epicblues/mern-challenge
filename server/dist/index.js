@@ -9,6 +9,7 @@ var mongoose_1 = __importDefault(require("mongoose"));
 var cors_1 = __importDefault(require("cors"));
 // package.json 에서 "type" : "module" 선언을 통해 활용 가능
 var posts_1 = __importDefault(require("./routes/posts"));
+var users_1 = __importDefault(require("./routes/users"));
 var dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 // .env 파일을 Node의 환경변수로 인식하게 해주는 라이브러리
@@ -19,6 +20,7 @@ app.use((0, cors_1.default)());
 app.use(body_parser_1.default.json({ limit: "30mb" }));
 app.use(body_parser_1.default.urlencoded({ limit: "30mb", extended: true }));
 app.use("/posts", posts_1.default);
+app.use("/user", users_1.default);
 app.get("/", function (req, res) {
     res.send("Hello to memories API");
 });
