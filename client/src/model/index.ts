@@ -1,13 +1,14 @@
 export type PostVo = {
   _id?: string;
   creator?: string;
-  likeCount?: number;
+  likes?: [string];
   message?: string;
   selectedFile?: string;
   tags?: [string];
   title?: string;
   __v?: number;
   createdAt?: Date;
+  name?: string;
 };
 
 export type UserVo = {

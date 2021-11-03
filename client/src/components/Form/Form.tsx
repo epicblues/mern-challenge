@@ -6,25 +6,28 @@ import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
 import { createPost, updatePost } from '../../actions/posts';
 
 
+
 // Get the current ID of form
 
 export type PostType = {
   _id?: string
   title?: string,
   message?: string,
-  creator?: string,
   tags?: string[],
   selectedFile?: string,
-  likeCount?: number,
-  createdAt?: Date
+  likes?: [string],
+  createdAt?: Date,
+  name?: string
 }
 
 const Form: FunctionComponent<{ currentId: string | null, setCurrentId: Function }> = ({ currentId, setCurrentId }) => {
   const dispatch = useDispatch();
   const selectedPost = useSelector((state: RootStateOrAny) => currentId ? state.posts.find((post: PostType) => post._id === currentId) : null)
   // redux의 data을 fetch한다.
+  const profile = localStorage.getItem('profile');
+
   const [postData, setPostData] = useState<PostType>({
-    creator: '',
+    name: '',
     title: '',
     tags: [],
     selectedFile: '',
@@ -32,13 +35,20 @@ const Form: FunctionComponent<{ currentId: string | null, setCurrentId: Function
   });
 
   useEffect(() => {
+    let modifiedPost = postData;
     if (selectedPost) {
-      setPostData(selectedPost)
+      modifiedPost = { ...modifiedPost, ...selectedPost }
     }
+
+    if (profile) {
+      const { result: { name } } = JSON.parse(profile);
+      modifiedPost = { ...modifiedPost, name }
+    }
+    setPostData(modifiedPost);
     return () => {
 
     }
-  }, [selectedPost])
+  }, [selectedPost, profile])
 
   const classes = useStyles();
   const handleSubmit: FormEventHandler = (event) => {
@@ -53,7 +63,7 @@ const Form: FunctionComponent<{ currentId: string | null, setCurrentId: Function
   }
   const clear = () => {
     setPostData({
-      creator: '',
+
       title: '',
       tags: [],
       selectedFile: '',
@@ -62,20 +72,20 @@ const Form: FunctionComponent<{ currentId: string | null, setCurrentId: Function
     setCurrentId(null);
   }
 
+  if (!profile) {
+    return (
+      <Paper className={classes.paper}>
+        <Typography variant="h6" align="center">
+          Please Sign In to Create Your own memories
+        </Typography>
+      </Paper>
+    )
+  }
+
   return (
     <Paper className={classes.paper}>
       <form action="" autoComplete="off" noValidate className={`${classes.form} ${classes.root}`} onSubmit={handleSubmit}>
         <Typography variant="h6">{currentId ? 'Updating' : 'Creating'} a Memory</Typography>
-        <TextField
-          name="creator"
-          variant="outlined"
-          label="Creator"
-          fullWidth
-          value={postData.creator}
-          onChange={(e) => {
-            setPostData({ ...postData, creator: e.target.value })
-          }}
-        />
         <TextField
           name="title"
           variant="outlined"

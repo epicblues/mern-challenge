@@ -1,4 +1,5 @@
 import express from "express";
+
 import {
   getPosts,
   createPost,
@@ -6,13 +7,16 @@ import {
   updatePost,
   likePost,
 } from "../controllers/posts";
+import auth from "../middleware/auth";
 
 const router = express.Router();
 
 router.get("/", getPosts);
-router.post("/", createPost);
-router.patch("/:id", updatePost);
-router.delete("/", deletePost);
-router.patch("/:id/likePost", likePost);
+
+// 미들웨어 탑재
+router.post("/", auth, createPost);
+router.patch("/:id", auth, updatePost);
+router.delete("/", auth, deletePost);
+router.patch("/:id/likePost", auth, likePost);
 
 export default router;

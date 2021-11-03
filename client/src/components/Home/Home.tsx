@@ -19,7 +19,7 @@ const Home: FunctionComponent = () => {
     return () => {
 
     }
-  }, [dispatch, currentId])
+  }, [])
   return (
     <Grow in>
       <Container>

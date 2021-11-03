@@ -6,21 +6,39 @@ const url =
   process.env.REACT_APP_LOCAL_URL || "https://kms-mern-practice.herokuapp.com/";
 // url pointing to backend route
 
-export const fetchPosts = () => axios.get(url + "posts");
+const API = axios.create({ baseURL: url });
 
-export const createPost = (newPost: PostType) =>
-  axios.post(url + "posts", newPost);
+API.interceptors.request.use((req) => {
+  const profile = localStorage.getItem("profile");
+  if (profile) {
+    return {
+      ...req,
+      headers: {
+        ...req.headers,
+        Authorization: `Bearer ${JSON.parse(profile).token}`,
+      },
+    };
+  }
+  return req;
+});
+// 기본 url 설정 axios 인스턴스
+// interceptor 객체를 request가 호출될 때마다 작동하는 함수를 통해 request를 세팅할 수 있다.
+
+export const fetchPosts = () => API.get("posts");
+
+export const createPost = (newPost: PostType) => API.post("posts", newPost);
 
 export const updatePost = (id: string, post: PostType) =>
-  axios.patch(url + `/${id}`, post);
+  API.patch(`posts/${id}`, post);
 
 export const deletePost = (id: string) =>
-  axios.delete(url + "posts", { data: { id } });
+  API.delete("posts", {
+    data: { id },
+  });
 
 export const likePost = (id: string) =>
-  axios.patch(`${url}posts/${id}/likePost`);
+  API.patch(`posts/${id}/likePost`, undefined);
 
-export const signUp = (user: UserVo) => axios.post(url + "user/signup", user);
-export const signIn = (user: UserVo) => axios.post(url + "user/signin", user);
-
+export const signUp = (user: UserVo) => API.post("user/signup", user);
+export const signIn = (user: UserVo) => API.post("user/signin", user);
 // 모든 backend action은 Redux에서 이루어진다.

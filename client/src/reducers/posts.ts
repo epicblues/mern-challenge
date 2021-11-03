@@ -8,6 +8,7 @@ const postReducer: Reducer = (posts: any[] = [], action) => {
 
   switch (action.type) {
     case FETCH_ALL:
+      console.log(FETCH_ALL);
       return action.payload;
     // action의 payload에 세팅된 fetch된 값을 state로 반영한다.
     case CREATE:
@@ -15,6 +16,7 @@ const postReducer: Reducer = (posts: any[] = [], action) => {
     case DELETE:
       return posts.filter((post: PostVo) => post._id !== action.payload);
     case UPDATE:
+      console.log("UPDATING");
       return posts.map((post: PostVo) =>
         post._id === action.payload._id ? action.payload : post
       );

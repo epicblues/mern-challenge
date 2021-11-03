@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -41,6 +52,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.likePost = exports.deletePost = exports.updatePost = exports.createPost = exports.getPosts = void 0;
 var mongoose_1 = __importDefault(require("mongoose"));
+var constants_1 = require("../constants");
 var postMessage_1 = __importDefault(require("../models/postMessage"));
 var getPosts = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var PostMessages, error_1;
@@ -68,13 +80,12 @@ var createPost = function (req, res) { return __awaiter(void 0, void 0, void 0, 
         switch (_a.label) {
             case 0:
                 post = req.body;
-                newPost = new postMessage_1.default(post);
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, newPost.save()];
+                return [4 /*yield*/, postMessage_1.default.create(__assign(__assign({}, post), { creator: req[constants_1.USER_ID], createdAt: new Date().toISOString() }))];
             case 2:
-                _a.sent();
+                newPost = _a.sent();
                 // 실제로 db와 소통하는 부분
                 res.status(200).json(newPost);
                 return [3 /*break*/, 4];
@@ -112,7 +123,7 @@ var deletePost = function (req, res) { return __awaiter(void 0, void 0, void 0, 
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                id = req.body._id;
+                id = req.body.id;
                 if (!mongoose_1.default.Types.ObjectId.isValid(id))
                     return [2 /*return*/, res.status(404).send("No post with that id")];
                 return [4 /*yield*/, postMessage_1.default.findByIdAndRemove(id)];
@@ -125,17 +136,30 @@ var deletePost = function (req, res) { return __awaiter(void 0, void 0, void 0, 
 }); };
 exports.deletePost = deletePost;
 var likePost = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var id, updatedPost;
+    var id, post, index, updatedPost, updatedPost;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 id = req.params.id;
+                if (!req["userId"])
+                    return [2 /*return*/, res.json({ message: "unauthenticated" })];
                 if (!mongoose_1.default.Types.ObjectId.isValid(id))
                     return [2 /*return*/, res.status(404).send("No post with that id")];
-                return [4 /*yield*/, postMessage_1.default.findByIdAndUpdate(id, { $inc: { likeCount: 1 } }, {
+                return [4 /*yield*/, postMessage_1.default.findById(id)];
+            case 1:
+                post = _a.sent();
+                index = post.likes.findIndex(function (id) { return id === String(req["userId"]); });
+                if (!(index === -1)) return [3 /*break*/, 3];
+                return [4 /*yield*/, postMessage_1.default.findByIdAndUpdate(id, { $push: { likes: req["userId"] } }, {
                         new: true,
                     })];
-            case 1:
+            case 2:
+                updatedPost = _a.sent();
+                return [2 /*return*/, res.status(200).send(updatedPost)];
+            case 3: return [4 /*yield*/, postMessage_1.default.findByIdAndUpdate(id, { $pull: { likes: req["userId"] } }, {
+                    new: true,
+                })];
+            case 4:
                 updatedPost = _a.sent();
                 return [2 /*return*/, res.status(200).send(updatedPost)];
         }

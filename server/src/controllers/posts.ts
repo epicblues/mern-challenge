@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
-import mongoose, { NativeError } from "mongoose";
-import PostMessage from "../models/postMessage";
+import mongoose from "mongoose";
+import { USER_ID } from "../constants";
+import PostMessage, { Post } from "../models/postMessage";
 
 export const getPosts: RequestHandler = async (req, res) => {
   try {
@@ -15,11 +16,13 @@ export const getPosts: RequestHandler = async (req, res) => {
 export const createPost: RequestHandler = async (req, res) => {
   const post = req.body;
   // 폼 데이터를 받아온다.
-  const newPost = new PostMessage(post);
-  // 스키마에 적합한 PostMessage document 생성
 
   try {
-    await newPost.save();
+    const newPost = await PostMessage.create({
+      ...post,
+      creator: req[USER_ID],
+      createdAt: new Date().toISOString(),
+    });
     // 실제로 db와 소통하는 부분
 
     res.status(200).json(newPost);
@@ -42,7 +45,7 @@ export const updatePost: RequestHandler = async (req, res) => {
 };
 
 export const deletePost: RequestHandler = async (req, res) => {
-  const { _id: id } = req.body;
+  const { id } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(404).send("No post with that id");
@@ -54,14 +57,32 @@ export const deletePost: RequestHandler = async (req, res) => {
 
 export const likePost: RequestHandler = async (req, res) => {
   const { id } = req.params;
+  if (!req["userId"]) return res.json({ message: "unauthenticated" });
   if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(404).send("No post with that id");
-  const updatedPost = await PostMessage.findByIdAndUpdate(
-    id,
-    { $inc: { likeCount: 1 } },
-    {
-      new: true,
-    }
-  );
-  return res.status(200).send(updatedPost);
+
+  const post: Post = await PostMessage.findById(id);
+
+  const index = post.likes.findIndex((id) => id === String(req["userId"]));
+
+  if (index === -1) {
+    const updatedPost = await PostMessage.findByIdAndUpdate(
+      id,
+      { $push: { likes: req["userId"] } },
+      {
+        new: true,
+      }
+    );
+    return res.status(200).send(updatedPost);
+  } else {
+    // dislike a post
+    const updatedPost = await PostMessage.findByIdAndUpdate(
+      id,
+      { $pull: { likes: req["userId"] } },
+      {
+        new: true,
+      }
+    );
+    return res.status(200).send(updatedPost);
+  }
 };

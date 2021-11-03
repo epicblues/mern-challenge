@@ -26,9 +26,10 @@ var postSchema = new mongoose.Schema({
     creator: String,
     tags: [String],
     selectedFile: String,
-    likeCount: {
-        type: Number,
-        default: 0,
+    name: String,
+    likes: {
+        type: [String],
+        default: [],
     },
     createdAt: {
         type: Date,
